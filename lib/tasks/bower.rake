@@ -21,6 +21,7 @@ namespace :bower do
     FileUtils.rm_rf 'assets/javscripts'
     FileUtils.rm_rf 'assets/stylesheets'
     FileUtils.rm_rf 'assets/fonts'
+    FileUtils.rm_rf 'assets/images'
 
     # Extract the asset references from the example pages
     assets_list=assets
@@ -52,6 +53,15 @@ namespace :bower do
     Find.find('bower_components/gentelella/vendors') { |path|
       next unless path.end_with?('js.map') || path.end_with?('css.map')
       dest = path.sub('bower_components/gentelella/vendors/', 'assets/'+(path.end_with?('js.map') ? 'javascripts/' : 'stylesheets/') )
+      puts 'vendoring ' + File.basename(dest)
+      FileUtils.mkdir_p File.dirname(dest)
+      FileUtils.cp path, dest
+    }
+
+    # Copy the sample images
+    Find.find('bower_components/gentelella/production/images') { |path|
+      next unless path.end_with?('.png') || path.end_with?('.jpg')
+      dest = File.join('assets', 'images', 'gentelella')
       puts 'vendoring ' + File.basename(dest)
       FileUtils.mkdir_p File.dirname(dest)
       FileUtils.cp path, dest

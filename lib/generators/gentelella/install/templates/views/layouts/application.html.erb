@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <!-- Meta, title, CSS, favicons, etc. -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title><%= content_for?(:title) ? yield(:title) : 'Gentelella-Rails Template' %></title>
+
+  <!-- Theme stylesheet tags -->
+  <%= stylesheet_link_tag 'gentelella', media: 'all', 'data-turbolinks-track' => true %>
+
+  <!-- Rails specific -->
+  <%= csrf_meta_tags %>
+  <!-- App stylesheet tags -->
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+  <!-- meta tags -->
+  <meta name="description" content="<%= content_for?(:description) ? yield(:description) : '' %>">
+</head>
+
+<body class="nav-md">
+<div class="container body">
+  <div class="main_container">
+
+    <!-- Left Column -->
+    <div class="col-md-3 left_col">
+      <%= render 'leftnav' %>
+    </div>
+
+    <!-- top navigation -->
+    <div class="top_nav">
+      <%= render 'topnav' %>
+    </div>
+    <!-- /top navigation -->
+
+    <!-- page content -->
+    <div class="right_col" role="main">
+      <%= yield %>
+    </div>
+    <!-- /page content -->
+
+    <!-- footer content -->
+    <footer>
+      <%= render 'footer' %>
+    </footer>
+    <!-- /footer content -->
+
+  </div>
+</div>
+<!-- Theme javascripts -->
+<%= javascript_include_tag 'gentelella', 'data-turbolinks-track' => true %>
+<!-- App javascripts -->
+<%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+</body>
+</html>

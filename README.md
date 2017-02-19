@@ -47,33 +47,35 @@ Add the following to your Rails application's Gemfile and bundle install:
 gem 'gentelella-rails'
 ```
 
-Then perform the following:
+To install the sample layout, partial and view files run the following:
 
 ```bash
 bundle install
 rails g gentelella:install
 ```
 
-Add the following to your assets/javascripts/application.js
+This generator will inform you which files are being added to your application. If
+a file exists then the generator will put the file with a ".gentelella" extension so
+that you can examine it and decide what to do next.
 
-```javascript
-//= require gentelella
-```
+What I have done for you is to break up the 'index.html' file into a layout file with
+a series of partials to make customization a bit more modular. You can focus on just the
+left hand navigation menu. If things get messed up you can always get the generated 
+file to figure out where you have gone wrong.
 
-There is no need to include bootstrap-sprockets, font-awesome, jquery, etc. as these are all included via
-the gem when you "require gentelella"
+The sample content file expects a route to 'visitors#index' and a visitors controller.
+You can move the file 'app/views/visitors/index.html' to a controller that you're working on.
 
-Finally, add the stylesheet directives to your assets/stylesheets/application.css.scss
+There are two ways to get the required JavaScript and Stylesheets in to your layout.
 
-```sass
-*= require gentelella
-```
-
-This will pull in all necessary stylesheets including bootstrap, font-awesome, etc., which the theme uses.
-
-```ruby
-gem 'gentelella-rails'
-```
+The first way is shown in the sample application.html.erb. Here all of the Gentelella-specific
+assets are brought in by specific statements. Then your application.js/css items
+are included immediately after. In this approach you do not define any of the Gentelella-specific
+assets in your application.js/css files - you only put your application specific additions.
+ 
+The second way is to use the more typical application.js/css has everything. In this case
+put 'require gentelella' entries in both files first and then have your application specific
+items afterwards. In this case you're building your own application layout file.
 
 ## Contributing
 This gem should be automated to update by running:
