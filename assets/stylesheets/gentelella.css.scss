@@ -1,0 +1,43 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+ *
+ *= require bootstrap/dist/css/bootstrap.min.css
+ *= require font-awesome/css/font-awesome.min.css
+ *= require nprogress/nprogress.css
+ *= require fullcalendar/dist/fullcalendar.min.css
+ *= require fullcalendar/dist/fullcalendar.print.css
+ *= require iCheck/skins/flat/green.css
+ *= require malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css
+ *= require google-code-prettify/bin/prettify.min.css
+ *= require select2/dist/css/select2.min.css
+ *= require switchery/dist/switchery.min.css
+ *= require starrr/dist/starrr.css
+ *= require bootstrap-daterangepicker/daterangepicker.css
+ *= require normalize-css/normalize.css
+ *= require ion.rangeSlider/css/ion.rangeSlider.css
+ *= require ion.rangeSlider/css/ion.rangeSlider.skinFlat.css
+ *= require mjolnic-bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css
+ *= require cropper/dist/cropper.min.css
+ *= require dropzone/dist/min/dropzone.min.css
+ *= require bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css
+ *= require pnotify/dist/pnotify.css
+ *= require pnotify/dist/pnotify.buttons.css
+ *= require pnotify/dist/pnotify.nonblock.css
+ *= require jqvmap/dist/jqvmap.min.css
+ *= require animate.css/animate.min.css
+ *= require datatables.net-bs/css/dataTables.bootstrap.min.css
+ *= require datatables.net-buttons-bs/css/buttons.bootstrap.min.css
+ *= require datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css
+ *= require datatables.net-responsive-bs/css/responsive.bootstrap.min.css
+ *= require datatables.net-scroller-bs/css/scroller.bootstrap.min.css
+//= require css/custom.min.css
+ */

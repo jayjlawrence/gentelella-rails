@@ -1,14 +1,16 @@
 # Gentelella Rails
 
-This is mostly an experimental effort to inject the Gentelella theme into Rails assets pipeline.
+This is gem to easily bring the Gentelella theme into a Rails project.
 
-My goal in building this gem was to learn:
+The Gentelellia Theme version in this release is 1.4.0 and this version's gem build is 2.
 
-  * how to automate bower updates
-  * package up only the files needed for the gem to function in production
+This gem:
+
+  * packages up only the files needed for the gem to function in production
   * load everything up with just one or two requires in the Rails app that uses it
+  * automates bower updates
 
-Beware that this gem furnishes a fairly comprehensive theme and pulls in *many* other libraries such as:
+This gem furnishes a comprehensive theme and pulls in *many* other javascript libraries such as:
 
   * jquery and jquery_ujs
   * bootstrap-sass and font-awesome-sass
@@ -24,8 +26,12 @@ Beware that this gem furnishes a fairly comprehensive theme and pulls in *many* 
   * Select2
   * Parsley JS
 
-Where possible, I utilized well-maintained Rails gems for the above.  However, if the gems were
-out of date, I utilized the Bower supplied version.
+Since the Gentetella theme references specific javascript packages and keep things simple 
+I have taken the strategy to NOT use Rails javascript gems and instead just use all of the 
+assets provided by the theme when it is built.
+
+Where a rails gem for a specific javascript library has useful helpers I will then develop a way to
+incorporate that specific library into this gem.
 
 You may also find the demo [Rails 5.x project on github](https://github.com/mwlang/gentelella-rails-demo)
 
@@ -52,27 +58,15 @@ Add the following to your assets/javascripts/application.js
 
 ```javascript
 //= require gentelella
-//= require gentelella-custom
-```
-
-If you're working with jquery.vmap, then your application.js will look something like this:
-
-```javascript
-//= require gentelella
-//= require jqvmap/maps/jquery.vmap.world
-//= require jqvmap/maps/jquery.vmap.usa
-//= require jquery.vmap.sampledata
-//= require gentelella-custom
 ```
 
 There is no need to include bootstrap-sprockets, font-awesome, jquery, etc. as these are all included via
 the gem when you "require gentelella"
 
-Finally, add the stylesheet directives to your assets/stylesheets/application.scss
+Finally, add the stylesheet directives to your assets/stylesheets/application.css.scss
 
 ```sass
-@import "gentelella";
-@import "gentelella-custom";
+*= require gentelella
 ```
 
 This will pull in all necessary stylesheets including bootstrap, font-awesome, etc., which the theme uses.
@@ -82,24 +76,20 @@ gem 'gentelella-rails'
 ```
 
 ## Contributing
-I don't have any personal plans to utilize this theme in my projects, so if this project is of interest,
-fork and send pull requests and I will publish!
-
-The gem should be fairly easy to update to latest JS libraries as they come available.
-If the JS or CSS libraries are via a rubygem, then:
-
-```bash
-bundle update GEMNAME
-```
-
-If the libraries are supplied by bower then:
+This gem should be automated to update by running:
 
 ```bash
 rake bower:update
 rake bower:vendor
 ```
 
+This will extract all of the javascript and stylesheet references from the example
+pages from the theme plus copy all of the fonts.
+
+
 ## Credits
+This package was originally started by [Michael Lang](https://github.com/mwlang/gentelella-rails).
+
 The original [theme](https://github.com/puikinsh/gentelella) was developed by
 [Colorlib](https://colorlib.com/) and released under MIT license.
 

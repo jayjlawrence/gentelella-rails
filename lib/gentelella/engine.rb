@@ -7,7 +7,7 @@ module Gentelella
     end
 
     initializer 'gentelella.assets.precompile' do |app|
-      %w(stylesheets javascripts).each do |sub|
+      %w(stylesheets javascripts fonts).each do |sub|
         app.config.assets.paths << root.join('assets', sub).to_s
       end
     end
