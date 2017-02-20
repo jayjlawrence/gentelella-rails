@@ -3,6 +3,9 @@ require 'nokogiri'
 require 'find'
 
 namespace :bower do
+
+  MODE=:development # Set mode to :development to make easier for development and debugging, like use non-minified custom assets
+
   # desc "updates JS version references in README and VERSION files"
   # task :bump do
   #   bump_readme_file
@@ -29,13 +32,28 @@ namespace :bower do
     # Copy the javascript assets
     assets_list[:javascript].each { |path|
       cp_asset path
+      cp_asset path.sub('custom.min.js', 'custom.js') if path.end_with?('custom.min.js') && MODE==:development # Copy the non minified custom.js for development purposes
     }
+    # Patch the custom JS - this is as it stands is good for 1 or 2 patches but not for more than that.
+    if File.exists?('assets/javascripts/js/custom.js')
+      puts 'PATCHING js/custom.js'
+      IO.write(
+          'assets/javascripts/js/custom.js',
+          File.open('assets/javascripts/js/custom.js') { |f|
+            f.read.gsub(
+                %q(if (typeof $download[0].download === 'undefined') {),
+                %q(if ($download[0] && typeof $download[0].download === 'undefined') {)
+            )
+          }
+      )
+    end
     # Write the gentelella.js file
     write_javascript(assets_list[:javascript])
 
     # Copy the stylesheet assets
     assets_list[:css].each { |path|
       cp_asset path
+      cp_asset path.sub('custom.min.css', 'custom.css') if path.end_with?('custom.min.css') && MODE==:development # Copy the non minified custom.js for development purposes
     }
     # Write the gentelella.css.scss file
     write_css(assets_list[:css])
@@ -52,7 +70,7 @@ namespace :bower do
     # Copy all the map files
     Find.find('bower_components/gentelella/vendors') { |path|
       next unless path.end_with?('js.map') || path.end_with?('css.map')
-      dest = path.sub('bower_components/gentelella/vendors/', 'assets/'+(path.end_with?('js.map') ? 'javascripts/' : 'stylesheets/') )
+      dest = path.sub('bower_components/gentelella/vendors/', 'assets/'+(path.end_with?('js.map') ? 'javascripts/' : 'stylesheets/'))
       puts 'vendoring ' + File.basename(dest)
       FileUtils.mkdir_p File.dirname(dest)
       FileUtils.cp path, dest
@@ -109,7 +127,7 @@ end
 
 def cp_asset filename
   base_filename = File.basename(filename)
-  assets_folder = File.join('assets', base_filename.end_with?('.js') ? 'javascripts' : 'stylesheets', File.dirname(filename).sub('../build/',''))
+  assets_folder = File.join('assets', base_filename.end_with?('.js') ? 'javascripts' : 'stylesheets', File.dirname(filename).sub('../build/', ''))
   puts 'vendoring ' + base_filename
   FileUtils.mkdir_p assets_folder
   FileUtils.cp File.join(bower_asset_path, 'vendors', filename), assets_folder
@@ -217,7 +235,10 @@ HEADER
       fout.puts "//= require #{asset}" unless asset=='../build/js/custom.min.js'
     }
 
-    fout.puts '//= require js/custom.min.js' if asset_list.include?('../build/js/custom.min.js')
+    if asset_list.include?('../build/js/custom.min.js')
+      fout.puts MODE==:development ? '//= require js/custom.js' : '//= require js/custom.min.js'
+    end
+
     fout.puts <<FOOTER
 FOOTER
 
@@ -245,7 +266,10 @@ HEADER
       fout.puts " *= require #{asset}" unless asset=='../build/css/custom.min.css'
     }
 
-    fout.puts '//= require css/custom.min.css' if asset_list.include?('../build/css/custom.min.css')
+    if asset_list.include?('../build/css/custom.min.css')
+      fout.puts MODE==:development ? '//= require css/custom.css' : '//= require css/custom.min.css'
+    end
+
     fout.puts <<FOOTER
  */
 FOOTER

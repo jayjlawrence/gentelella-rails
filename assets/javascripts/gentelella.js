@@ -78,5 +78,5 @@
 //= require jszip/dist/jszip.min.js
 //= require pdfmake/build/pdfmake.min.js
 //= require pdfmake/build/vfs_fonts.js
-//= require js/custom.min.js
+//= require js/custom.js
 
