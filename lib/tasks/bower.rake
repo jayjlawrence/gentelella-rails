@@ -29,7 +29,7 @@ namespace :bower do
     # Extract the asset references from the example pages
     assets_list=assets
 
-    # Copy the javascript assets
+    # Copy the bower package javascript assets
     assets_list[:javascript].each { |path|
       cp_asset path
       cp_asset path.sub('custom.min.js', 'custom.js') if path.end_with?('custom.min.js') && MODE==:development # Copy the non minified custom.js for development purposes
@@ -53,7 +53,7 @@ namespace :bower do
     # Write the gentelella.js file
     write_javascript(assets_list[:javascript])
 
-    # Copy the stylesheet assets
+    # Copy all the bower package stylesheet assets
     assets_list[:css].each { |path|
       cp_asset path
       cp_asset path.sub('custom.min.css', 'custom.css') if path.end_with?('custom.min.css') && MODE==:development # Copy the non minified custom.js for development purposes
@@ -61,10 +61,29 @@ namespace :bower do
     # Write the gentelella.css.scss file
     write_css(assets_list[:css])
 
-    # Copy all the fonts
+    # Copy all bower package fonts
     Find.find('bower_components/gentelella/vendors') { |path|
-      next unless path.end_with?('woff') || path.end_with?('ttf')
+      next unless path.end_with?('.woff') || path.end_with?('.ttf')
       dest = path.sub('bower_components/gentelella/vendors/', 'assets/fonts/')
+      puts 'vendoring ' + File.basename(dest)
+      FileUtils.mkdir_p File.dirname(dest)
+      FileUtils.cp path, dest
+    }
+
+    # Copy all bower package images
+    Find.find('bower_components/gentelella/vendors') { |path|
+      next unless path.end_with?('.png') || path.end_with?('.jpg')
+      dest = path.sub('bower_components/gentelella/vendors/', 'assets/images/')
+      puts 'vendoring ' + File.basename(dest)
+      FileUtils.mkdir_p File.dirname(dest)
+      FileUtils.cp path, dest
+    }
+
+    # Copy all bower package stylesheets
+    Find.find('bower_components/gentelella/vendors') { |path|
+      next unless path.end_with?('.css')
+      dest = path.sub('bower_components/gentelella/vendors/', 'assets/stylesheets/')
+      next if File.exist?(dest) # this was brought over by an explicit reference in a sample page
       puts 'vendoring ' + File.basename(dest)
       FileUtils.mkdir_p File.dirname(dest)
       FileUtils.cp path, dest
@@ -72,7 +91,7 @@ namespace :bower do
 
     # Copy all the map files
     Find.find('bower_components/gentelella/vendors') { |path|
-      next unless path.end_with?('js.map') || path.end_with?('css.map')
+      next unless path.end_with?('.js.map') || path.end_with?('.css.map')
       dest = path.sub('bower_components/gentelella/vendors/', 'assets/'+(path.end_with?('js.map') ? 'javascripts/' : 'stylesheets/'))
       puts 'vendoring ' + File.basename(dest)
       FileUtils.mkdir_p File.dirname(dest)
