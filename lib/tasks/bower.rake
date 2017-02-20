@@ -18,7 +18,7 @@ namespace :bower do
   task :vendor do
 
     # Clear out the existing fonts, javascripts, and stylesheets
-    FileUtils.rm_rf 'assets/javscripts'
+    FileUtils.rm_rf 'assets/javascripts'
     FileUtils.rm_rf 'assets/stylesheets'
     FileUtils.rm_rf 'assets/fonts'
     FileUtils.rm_rf 'assets/images'
@@ -61,11 +61,32 @@ namespace :bower do
     # Copy the sample images
     Find.find('bower_components/gentelella/production/images') { |path|
       next unless path.end_with?('.png') || path.end_with?('.jpg')
-      dest = File.join('assets', 'images', 'gentelella')
-      puts 'vendoring ' + File.basename(dest)
-      FileUtils.mkdir_p File.dirname(dest)
-      FileUtils.cp path, dest
+      dest_dir = File.join('assets', 'images', 'gentelella')
+      puts 'vendoring ' + File.basename(dest_dir)
+      FileUtils.mkdir_p dest_dir
+      FileUtils.cp path, dest_dir
     }
+
+    # Copy the sample files to erb content templates
+    content_files=[]
+    Dir.glob(bower_asset_path+'/production/*.html').each { |path|
+      next if files_omit.include?(File.basename(path))
+      page = Nokogiri::HTML(open(path))
+      div=page.css('div').select { |d| d.attr('role')=='main' }[0]
+      if div
+        content=div.children.to_s
+        content_file=File.join('lib', 'generators', 'gentelella', 'install', 'templates', 'views', 'gentelella', File.basename(path+'.erb'))
+        FileUtils.mkpath File.dirname(content_file)
+        puts 'vendoring ' + File.basename(content_file)
+        File.open(content_file, 'w') { |fout| fout.write content }
+        content_files << File.basename(content_file)
+      else
+        puts "Could not find the content section for file #{path}"
+      end
+    }
+
+    # Generate a controller to respond to all of the content file 'actions'
+    write_gentelella_controller content_files
 
     # Update the versions in files
     bump_readme_file
@@ -227,6 +248,33 @@ HEADER
     fout.puts '//= require css/custom.min.css' if asset_list.include?('../build/css/custom.min.css')
     fout.puts <<FOOTER
  */
+FOOTER
+
+  }
+end
+
+def write_gentelella_controller content_list
+  File.open('controllers/gentelella_controller.rb', 'w') { |fout|
+    fout.puts <<HEADER
+class GentelellaController < ApplicationController
+
+HEADER
+
+    content_list.each { |content|
+      content.sub!('.html.erb', '')
+
+      fout.puts <<ACTION
+  # GET /gentelella/#{content}
+  def #{content}
+  end
+
+ACTION
+    }
+
+    fout.puts <<FOOTER
+  private
+
+end
 FOOTER
 
   }

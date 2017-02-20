@@ -63,9 +63,6 @@ a series of partials to make customization a bit more modular. You can focus on 
 left hand navigation menu. If things get messed up you can always get the generated 
 file to figure out where you have gone wrong.
 
-The sample content file expects a route to 'visitors#index' and a visitors controller.
-You can move the file 'app/views/visitors/index.html' to a controller that you're working on.
-
 There are two ways to get the required JavaScript and Stylesheets in to your layout.
 
 The first way is shown in the sample application.html.erb. Here all of the Gentelella-specific
