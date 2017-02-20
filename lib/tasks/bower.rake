@@ -40,9 +40,12 @@ namespace :bower do
       IO.write(
           'assets/javascripts/js/custom.js',
           File.open('assets/javascripts/js/custom.js') { |f|
-            f.read.gsub(
+            f.read.sub(
                 %q(if (typeof $download[0].download === 'undefined') {),
                 %q(if ($download[0] && typeof $download[0].download === 'undefined') {)
+            ).sub(
+                 %q(if (true === $('#demo-form2').parsley().isValid()) {),
+                 %q(if ($('#demo-form2').parsley() && true === $('#demo-form2').parsley().isValid()) {)
             )
           }
       )
