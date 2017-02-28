@@ -1,6 +1,9 @@
 #!/usr/bin/env bash --login
 # The --login is so RVM works
 
+# Rebuild the project
+rake bower:vendor
+
 # This script is the general steps to go from a bare Rails project to one with Gentelella plus Devise talking to a SQLite database
 
 pushd ..
@@ -32,10 +35,18 @@ echo "config.action_mailer.default_url_options = { host: 'localhost', port: 3000
 echo "end" >> config/environments/development.rb
 
 rails generate devise User
-
 rake db:create
 rake db:migrate
 
 rails generate gentelella:install --force
 rails generate gentelella:install_devise --force
-open http://localhost:3000/gentelella_auth/index
+
+rake db:seed
+
+echo
+echo "======================================================"
+echo "The sample user is admin@example.com password admin123"
+echo "======================================================"
+echo
+
+rails s

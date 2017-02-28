@@ -1,5 +1,9 @@
 require 'find'
 
+# http://api.rubyonrails.org/classes/Rails/Generators/Base.html
+# http://api.rubyonrails.org/classes/Rails/Generators/Actions.html
+# http://www.rubydoc.info/github/wycats/thor/Thor/Actions
+
 module Gentelella
   class InstallDeviseGenerator < Rails::Generators::Base
     source_root File.expand_path('../templates', __FILE__)
@@ -37,6 +41,27 @@ module Gentelella
     get '/gentelella_auth/', to: 'gentelella_auth#index'
   end
 ENDROUTE
+    end
+
+    # Generate devise controllers
+    def gen_devise_controllers
+      generate 'devise:controllers', 'users'
+
+      # Inject "layout :devise" into controllers that require it
+      ["app/controllers/users/sessions_controller.rb"].each do |file|
+        insert_into_file file, :before => "# before_action" do
+          "  layout :devise\n"
+        end
+      end
+    end
+
+    # Seed sample user
+    def seed_user
+      append_to_file 'db/seeds.rb' do
+%q(        # Seed a sample devise user
+        user = User.create! :email => 'admin@example.com', :password => 'admin123', :password_confirmation => 'admin123'
+)
+      end
     end
 
   end

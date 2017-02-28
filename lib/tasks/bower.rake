@@ -334,6 +334,11 @@ class GentelellaAuthController < Devise::SessionsController
 
   before_action :authenticate_user!
 
+  # Override the controller path to re-use the view files for the GentelellaController
+  def self.controller_path
+    @@_controller_path = 'gentelella'
+  end
+
 HEADER
 
     content_list.each { |content|

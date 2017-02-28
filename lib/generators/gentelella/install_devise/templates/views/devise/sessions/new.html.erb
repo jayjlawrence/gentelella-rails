@@ -1,0 +1,28 @@
+<div class="login_wrapper">
+  <div class="animate form login_form">
+    <section class="login_content">
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+          <h1>Login Form</h1>
+          <div>
+            <%= f.email_field :email, autofocus: true, class: 'form-control', placeholder: 'Email' %>
+          </div>
+          <div>
+            <%= f.password_field :password, autocomplete: 'off', class: 'form-control', placeholder: 'Password' %>
+          </div>
+          <div>
+            <%= f.submit 'Log in', class: 'btn btn-default submit' %>
+            <% if devise_mapping.rememberable? -%>
+                <%= f.check_box :remember_me %>
+                <%= f.label :remember_me %>
+            <% end -%>
+          </div>
+          <div>
+            <a class="reset_pass" href="#">Lost your password?</a>
+          </div>
+      <% end %>
+
+    </section>
+  </div>
+  <%= render "devise/shared/links" %>
+
+</div>
