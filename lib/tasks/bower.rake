@@ -127,6 +127,7 @@ namespace :bower do
 
     # Generate a controller to respond to all of the content file 'actions'
     write_gentelella_controller content_files
+    write_gentelella_auth_controller content_files
 
     # Update the versions in files
     bump_readme_file
@@ -303,6 +304,35 @@ def write_gentelella_controller content_list
   File.open('lib/generators/install/templates/controllers/gentelella_controller.rb', 'w') { |fout|
     fout.puts <<HEADER
 class GentelellaController < ApplicationController
+
+HEADER
+
+    content_list.each { |content|
+      content.sub!('.html.erb', '')
+
+      fout.puts <<ACTION
+  # GET /gentelella/#{content}
+  def #{content}
+  end
+
+ACTION
+    }
+
+    fout.puts <<FOOTER
+  private
+
+end
+FOOTER
+
+  }
+end
+
+def write_gentelella_auth_controller content_list
+  File.open('lib/generators/install_devise/templates/controllers/gentelella_auth_controller.rb', 'w') { |fout|
+    fout.puts <<HEADER
+class GentelellaAuthController < Devise::SessionsController
+
+  before_action :authenticate_user!
 
 HEADER
 

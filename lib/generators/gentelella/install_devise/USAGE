@@ -1,0 +1,12 @@
+Description:
+    Installs sample Devise view and layout files into your project.
+    Adds route for '/gentelella_auth/<page>.html' to access the sample pages but requires authentication
+
+Example:
+    rails generate gentelella:install_devise
+or  rails generate gentelella:install_devise --force
+     - to force overwrite
+     - otherwise existing files will be untouched and sample file will have .gentelella extension
+
+see lib/generators/gentelella/install_devise/templates for the files that will be installed
+

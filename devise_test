@@ -1,0 +1,41 @@
+#!/usr/bin/env bash --login
+# The --login is so RVM works
+
+# This script is the general steps to go from a bare Rails project to one with Gentelella plus Devise talking to a SQLite database
+
+pushd ..
+
+TEST_DIR=gentelella-rails-devise-test
+RUBY=ruby-2.3.1
+
+if [ -d $TEST_DIR ]; then
+    rm -rf $TEST_DIR
+fi
+
+rvm use $RUBY
+
+rails new $TEST_DIR --skip-bundle
+
+cd $TEST_DIR
+echo $RUBY > .ruby-version
+
+echo "gem 'gentelella-rails', path: '../gentelella-rails'" >>Gemfile
+echo "gem 'devise'" >>Gemfile
+
+bundle install
+
+rails generate devise:install
+
+# Remove last line from development.rb file which should be "end" and add new config statements
+sed -i -e '$d' config/environments/development.rb
+echo "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }" >> config/environments/development.rb
+echo "end" >> config/environments/development.rb
+
+rails generate devise User
+
+rake db:create
+rake db:migrate
+
+rails generate gentelella:install --force
+rails generate gentelella:install_devise --force
+open http://localhost:3000/gentelella_auth/index
