@@ -4,9 +4,9 @@ Description:
 
 Example:
     rails generate gentelella:install
-or  rails generate gentelella:install true
+or  rails generate gentelella:install --force
      - to force overwrite
      - otherwise existing files will be untouched and sample file will have .gentelella extension
 
-see lib/generators/gentelella/templates for the files that will be installed
+see lib/generators/gentelella/install/templates for the files that will be installed
 

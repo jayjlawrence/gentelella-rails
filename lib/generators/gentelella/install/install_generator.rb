@@ -1,17 +1,21 @@
 require 'find'
 
+# http://api.rubyonrails.org/classes/Rails/Generators/Base.html
+# http://www.rubydoc.info/github/wycats/thor/Thor/Actions
+
 module Gentelella
   class InstallGenerator < Rails::Generators::Base
     source_root File.expand_path('../templates', __FILE__)
 
-    argument :force, type: :string, default: false, banner: "force overwrite"
-
     desc 'Copies sample templates to your application.'
+
+    # Copies the template files into the user's project with optional forced overwrite or alternatively with ".gentelella" as a suffix
     def copy_files
 
-      puts force.to_s
+      force = options.has_key?('force')
 
       template_folder = File.expand_path(File.expand_path('../templates', __FILE__))
+puts template_folder
 
       Find.find(template_folder) { |path|
         next if Dir.exist?(path)
@@ -27,9 +31,14 @@ module Gentelella
         end
       }
 
-      # Add this route to the routes.rb file to showcase the gentelella sample pages
-      route %q(get 'gentelella/:action', controller: 'gentelella')
+    end
 
+    # Add this route to the routes.rb file to showcase the gentelella sample pages
+    def add_route
+      route <<ENDROUTE
+    get '/gentelella/:action', controller: :gentelella
+    get '/gentelella/', to: 'gentelella#index'
+ENDROUTE
     end
 
 

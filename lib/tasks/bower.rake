@@ -300,7 +300,7 @@ FOOTER
 end
 
 def write_gentelella_controller content_list
-  File.open('controllers/gentelella_controller.rb', 'w') { |fout|
+  File.open('lib/generators/install/templates/controllers/gentelella_controller.rb', 'w') { |fout|
     fout.puts <<HEADER
 class GentelellaController < ApplicationController
 
