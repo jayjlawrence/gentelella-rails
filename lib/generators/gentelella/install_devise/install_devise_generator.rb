@@ -55,9 +55,12 @@ EOM
       route <<ENDROUTE
 
   devise_scope :user do
-    get '/gentelella_auth/:action', controller: :gentelella_auth
-    get '/gentelella_auth/', to: 'gentelella_auth#index'
+    authenticate do
+      get '/gentelella_auth/:action', controller: :gentelella_auth
+      get '/gentelella_auth/', to: 'gentelella_auth#index'
+    end
   end
+
 ENDROUTE
     end
 
