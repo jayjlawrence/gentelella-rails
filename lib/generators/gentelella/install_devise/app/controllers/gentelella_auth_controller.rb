@@ -1,6 +1,11 @@
-class GentelellaAuthController < ApplicationController
+class GentelellaAuthController < Devise::SessionsController
 
   before_action :authenticate_user!
+
+  # Override the controller path to re-use the view files for the GentelellaController
+  def self.controller_path
+    @@_controller_path = 'gentelella'
+  end
 
   # GET /gentelella/calendar
   def calendar

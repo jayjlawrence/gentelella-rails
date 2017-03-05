@@ -26,30 +26,24 @@ namespace :bower do
     FileUtils.rm_rf 'assets/fonts'
     FileUtils.rm_rf 'assets/images'
 
+    # Clear out existing templates that get installed
+    FileUtils.rm_rf 'lib/generators/gentelella/install/app/views/gentelella'
+    FileUtils.rm_rf 'lib/generators/gentelella/install/public'
+
+    FileUtils.rm_rf 'lib/generators/gentelella/install_devise/app/controllers'
+
     # Extract the asset references from the example pages
     assets_list=assets
 
     # Copy the bower package javascript assets
     assets_list[:javascript].each { |path|
+      next if path.end_with?('custom.min.js') || path.end_with?('custom.js')
       cp_asset path
-      cp_asset path.sub('custom.min.js', 'custom.js') if path.end_with?('custom.min.js') && MODE==:development # Copy the non minified custom.js for development purposes
     }
-    # Patch the custom JS - this is as it stands is good for 1 or 2 patches but not for more than that.
-    if File.exists?('assets/javascripts/js/custom.js')
-      puts 'PATCHING js/custom.js'
-      IO.write(
-          'assets/javascripts/js/custom.js',
-          File.open('assets/javascripts/js/custom.js') { |f|
-            f.read.sub(
-                %q(if (typeof $download[0].download === 'undefined') {),
-                %q(if ($download[0] && typeof $download[0].download === 'undefined') {)
-            ).sub(
-                 %q(if (true === $('#demo-form2').parsley().isValid()) {),
-                 %q(if ($('#demo-form2').parsley() && true === $('#demo-form2').parsley().isValid()) {)
-            )
-          }
-      )
-    end
+    # Copy our revised maintained custom.js file
+    FileUtils.mkpath 'assets/javascripts/js'
+    FileUtils.cp 'src/custom.js', 'assets/javascripts/js/custom.js'
+
     # Write the gentelella.js file
     write_javascript(assets_list[:javascript])
 
@@ -63,7 +57,7 @@ namespace :bower do
 
     # Copy all bower package fonts
     Find.find('bower_components/gentelella/vendors') { |path|
-      next unless path.end_with?('.woff') || path.end_with?('.ttf')
+      next unless path.end_with?('.woff') || path.end_with?('.woff2') || path.end_with?('.ttf')
       dest = path.sub('bower_components/gentelella/vendors/', 'assets/fonts/')
       puts 'vendoring ' + File.basename(dest)
       FileUtils.mkdir_p File.dirname(dest)
@@ -111,17 +105,31 @@ namespace :bower do
     content_files=[]
     Dir.glob(bower_asset_path+'/production/*.html').each { |path|
       next if files_omit.include?(File.basename(path))
-      page = Nokogiri::HTML(open(path))
-      div=page.css('div').select { |d| d.attr('role')=='main' }[0]
-      if div
-        content=div.children.to_s
-        content_file=File.join('lib', 'generators', 'gentelella', 'install', 'templates', 'views', 'gentelella', File.basename(path+'.erb'))
-        FileUtils.mkpath File.dirname(content_file)
-        puts 'vendoring ' + File.basename(content_file)
-        File.open(content_file, 'w') { |fout| fout.write content }
-        content_files << File.basename(content_file)
-      else
-        puts "Could not find the content section for file #{path}"
+      case File.basename(path)
+        when 'login.html'
+          # TODO - update the devise new.html.erb template
+          content_file=File.join('lib', 'generators', 'gentelella', 'install_devise', 'app', 'views', 'devise', 'sessions', 'new.html.erb')
+        when 'page_403.html', 'page_404.html', 'page_500.html'
+          content_file=File.join('lib', 'generators', 'gentelella', 'install', 'public', File.basename(path).sub('page_',''))
+          FileUtils.mkpath File.dirname(content_file)
+          puts 'vendoring ' + File.basename(content_file)
+          FileUtils.copy path, content_file
+          # TODO - revise the header
+        when 'xx.html'
+          # skip
+        else
+          page = Nokogiri::HTML(open(path))
+          div=page.css('div').select { |d| d.attr('role')=='main' }[0]
+          if div
+            content=div.children.to_s
+            content_file=File.join('lib', 'generators', 'gentelella', 'install', 'app', 'views', 'gentelella', File.basename(path+'.erb'))
+            FileUtils.mkpath File.dirname(content_file)
+            puts 'vendoring ' + File.basename(content_file)
+            File.open(content_file, 'w') { |fout| fout.write content }
+            content_files << File.basename(content_file)
+          else
+            puts "Could not find the content section for file #{path}"
+          end
       end
     }
 
@@ -205,12 +213,6 @@ def assets
 
   css_omit.each { |s| css_src.delete(s) }
 
-  puts 'Assets for index.html are:'
-  puts 'Javascript'
-  puts ' - '+javascript[bower_asset_path+'/production/index.html'].join("\n - ")
-  puts 'CSS'
-  puts ' - '+css[bower_asset_path+'/production/index.html'].join("\n - ")
-
   {
       javascript: javascript_src,
       css: css_src,
@@ -259,7 +261,7 @@ HEADER
     }
 
     if asset_list.include?('../build/js/custom.min.js')
-      fout.puts MODE==:development ? '//= require js/custom.js' : '//= require js/custom.min.js'
+      fout.puts '//= require js/custom.js'
     end
 
     fout.puts <<FOOTER
@@ -301,7 +303,8 @@ FOOTER
 end
 
 def write_gentelella_controller content_list
-  File.open('lib/generators/install/templates/controllers/gentelella_controller.rb', 'w') { |fout|
+  FileUtils.mkpath 'lib/generators/gentelella/install/app/controllers'
+  File.open('lib/generators/gentelella/install/app/controllers/gentelella_controller.rb', 'w') { |fout|
     fout.puts <<HEADER
 class GentelellaController < ApplicationController
 
@@ -328,7 +331,8 @@ FOOTER
 end
 
 def write_gentelella_auth_controller content_list
-  File.open('lib/generators/install_devise/templates/controllers/gentelella_auth_controller.rb', 'w') { |fout|
+  FileUtils.mkpath 'lib/generators/gentelella/install_devise/app/controllers'
+  File.open('lib/generators/gentelella/install_devise/app/controllers/gentelella_auth_controller.rb', 'w') { |fout|
     fout.puts <<HEADER
 class GentelellaAuthController < Devise::SessionsController
 

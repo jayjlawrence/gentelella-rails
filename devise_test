@@ -23,25 +23,23 @@ cd $TEST_DIR
 echo $RUBY > .ruby-version
 
 echo "gem 'gentelella-rails', path: '../gentelella-rails'" >>Gemfile
-echo "gem 'devise'" >>Gemfile
+echo "gem 'devise'" >>Gemfile # Devise gem must be installed in Gemfile before running generator
 
-bundle install
+bundle install --local
 
-rails generate devise:install
+#rails generate devise:install
+rails generate gentelella:install --force
+rails generate gentelella:install_devise --force
+
+#rails generate devise User
+rake db:create
+rake db:migrate
+rake db:seed
 
 # Remove last line from development.rb file which should be "end" and add new config statements
 sed -i -e '$d' config/environments/development.rb
 echo "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }" >> config/environments/development.rb
 echo "end" >> config/environments/development.rb
-
-rails generate devise User
-rake db:create
-rake db:migrate
-
-rails generate gentelella:install --force
-rails generate gentelella:install_devise --force
-
-rake db:seed
 
 echo
 echo "======================================================"

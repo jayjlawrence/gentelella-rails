@@ -14,12 +14,12 @@ module Gentelella
 
       force = options.has_key?('force')
 
-      template_folder = File.expand_path(File.expand_path('../templates', __FILE__))
-puts template_folder
+      template_folder = File.expand_path(File.expand_path('..', __FILE__))
 
       Find.find(template_folder) { |path|
         next if Dir.exist?(path)
-        dest = 'app/'+path.sub(template_folder+'/', '' )
+        dest = path.sub(template_folder+'/', '' )
+        next unless dest.start_with?('app') || dest.start_with?('public')
         puts 'installing template ' + dest
         if File.exist?(dest) && !force
           dest += '.gentelella'
@@ -36,11 +36,15 @@ puts template_folder
     # Add this route to the routes.rb file to showcase the gentelella sample pages
     def add_route
       route <<ENDROUTE
-    get '/gentelella/:action', controller: :gentelella
-    get '/gentelella/', to: 'gentelella#index'
+      
+  get '/gentelella/:action', controller: :gentelella
+  get '/gentelella/', to: 'gentelella#index'
 ENDROUTE
     end
 
+    def add_gems
+      gem 'gentelella-rails'
+    end
 
   end
 end
