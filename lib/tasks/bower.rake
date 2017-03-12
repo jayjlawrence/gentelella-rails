@@ -292,7 +292,7 @@ HEADER
     }
 
     if asset_list.include?('../build/css/custom.min.css')
-      fout.puts MODE==:development ? '//= require css/custom.css' : '//= require css/custom.min.css'
+      fout.puts MODE==:development ? ' *= require css/custom.css' : ' *= require css/custom.min.css'
     end
 
     fout.puts <<FOOTER
