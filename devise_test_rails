@@ -1,0 +1,13 @@
+#!/usr/bin/env bash --login
+# The --login is so RVM works
+
+pushd ..
+
+TEST_DIR=gentelella-rails-devise-test
+RUBY=ruby-2.3.1
+
+rvm use $RUBY
+
+cd $TEST_DIR
+
+rails s
