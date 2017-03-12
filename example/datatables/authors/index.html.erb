@@ -1,0 +1,28 @@
+
+<p id="notice"><%= notice %></p>
+
+<h1>Authors</h1>
+
+<table id="authors-table" data-source="<%= authors_path(format: :json) %>">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Gender</th>
+      <th>Email</th>
+      <th>City</th>
+      <th>Phone</th>
+      <th>Employer</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+  </tbody>
+
+</table>
+
+<br>
+
+<%= link_to 'New Author', new_author_path %>
+

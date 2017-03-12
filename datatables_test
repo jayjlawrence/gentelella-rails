@@ -1,0 +1,86 @@
+#!/usr/bin/env bash --login -x
+# The --login is so RVM works
+
+# Rebuild the project
+rake bower:vendor
+
+# This script is the general steps to go from a bare Rails project to one with Gentelella plus Devise talking to a SQLite database
+
+pushd ..
+
+TEST_DIR=gentelella-rails-datatables-test
+RUBY=ruby-2.3.1
+
+if [ -d $TEST_DIR ]; then
+    rm -rf $TEST_DIR
+fi
+
+rvm use $RUBY
+
+rails new $TEST_DIR --skip-bundle
+
+cd $TEST_DIR
+echo $RUBY > .ruby-version
+
+echo "gem 'gentelella-rails', path: '../gentelella-rails'" >>Gemfile
+echo "gem 'fabrication'" >>Gemfile # Makes fake data
+echo "gem 'faker'" >>Gemfile # Makes fake data
+echo "gem 'jquery-datatables'" >>Gemfile # https://github.com/mkhairi/jquery-datatables
+echo "gem 'ajax-datatables-rails', git: 'https://github.com/antillas21/ajax-datatables-rails', ref: '2f1eb9e129701dacaab57d40695d92a122d6aa80'" >>Gemfile # https://github.com/antillas21/ajax-datatables-rails
+
+bundle install
+
+# Install Gentelella and Datatables
+rails generate gentelella:install --force
+rails generate jquery:datatables:install bootstrap
+
+# Models
+rails generate scaffold Author name age:integer gender:string{1} email city phone employer --javascript-engine=js --no-fixture --no-jbuilder --no-test-framework
+rails generate datatable Author
+
+cat >>db/seeds.rb <<EOF
+
+# http://www.fabricationgem.org
+# http://www.rubydoc.info/github/stympy/faker/master/Faker/Base
+
+Fabricator(:author) do
+  name { Faker::Name.name }
+  age { rand(50)+18 }
+  gender { %w(M F).sample }
+  email { Faker::Internet.email }
+  city { Faker::Address.city }
+  phone { Faker::PhoneNumber.phone_number }
+  employer { Faker::Company.name }
+end
+
+200.times { Fabricate(:author) }
+
+EOF
+
+# Copy example author files for a datatable example
+cp ../gentelella-rails/example/datatables/author_datatable.rb app/datatables
+cp ../gentelella-rails/example/datatables/authors.js app/assets/javascripts
+cp ../gentelella-rails/example/datatables/authors/index.html.erb app/views/authors
+cp ../gentelella-rails/example/datatables/authors_controller.rb app/controllers
+
+rails generate scaffold Article title:string text:text author:references --javascript-engine=js --no-fixture --no-jbuilder --no-test-framework
+rails generate datatable Article
+cat >>db/seeds.rb <<EOF
+
+Fabricator(:article) do
+  title { Faker::Company.catch_phrase }
+  text { Faker::Lorem.paragraph(3, false, 3) }
+  author { Author.all.sample }
+end
+
+200.times { Fabricate(:article) }
+
+EOF
+
+rm app/assets/stylesheets/scaffolds.scss # The scaffoleded scss interferes with Gentelella
+
+rake db:create
+rake db:migrate
+rake db:seed
+
+rails s

@@ -1,5 +1,6 @@
 
 * verify production mode with compiled assets
+
 * I/P devise pages
     * login/session - new
     * registration - new edit
@@ -10,9 +11,11 @@
     
 * Config flag to add gem's views & controllers to the appropriate rails path or not
     * sample gentelelall.rb config file
+
 * I/P graphs on index page are broken - broken init_cropper
     * need to submit pull request to Gentelella
     * recommend adding log entry @ end of init_* code to say init is complete
+
 * error page(s) - 403, 403, and 500
     * revise script and css references to the rails asset system
     
@@ -22,9 +25,17 @@
     * In place editing of records
     * cable example for Dashboard indicator(s)
 
+* I/P Datatable Example
+    * I/P Index view
+    * Inline record edit
+    * New record add
+    * Delete record
+
 * DONE gentelella progress indicator fights with turbolinks progress indicator
     * Caused by failed init_X code
 
+* Generator install:gentelella
+    * add --no-routes option
 
 Ideas
 * partials, helpers and generators
